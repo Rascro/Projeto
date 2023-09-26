@@ -1,25 +1,33 @@
 import React, {useState} from 'react';
-import axios from 'axios';
 import { ScrollView, StyleSheet, View, Text, Animated} from 'react-native';
 import { Avatar, Card } from 'react-native-paper';
 import { SafeAreaView, useSafeAreaFrame } from 'react-native-safe-area-context';
-import api from '../service/api';
+import ImagenService from '../service/imagens';
 
 
 const LeftContent = props => <Avatar.Icon {...props} icon="folder" />
 
-function CardProduto () {
-  <Card style={{ backgroundColor: '0D131A' }}>
-    <Card.Title title="Comida" subtitle="Ingredientes" left={LeftContent} />
-    <Card.Content>
-      <Card.Cover source={{uri: 'https://guiadacozinha.com.br/wp-content/uploads/2020/01/10-comidas-inspiradas-no-tema-Pokémon-hambúrguer-Pikachu.jpg' }} />
-      <Text variant="bodyMedium">Conteudo sobre a comida</Text>
-    </Card.Content>
-  </Card>
-}
-
 export default function Home ({navigation}) {
-    const [scrollY, setScrollY] = useState(new Animated.Value(0));
+  const [scrollY, setScrollY] = useState(new Animated.Value(0));
+
+  const [refreshing, setRefreshing] = useState(false);
+  const [imagen, setImagens] = useState([]);
+
+  const fetchImagens = async () => {
+    const data = await ImagenService.getAllImagens();
+    setImagens(data);
+  };
+
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    await fetchImagens();
+    setRefreshing(false);
+  }, []);
+
+  useEffect(() => {
+    fetchImagens();
+  }, []);
+
   return (
     <View>
     <Animated.View style={[styles.header,
@@ -63,7 +71,16 @@ export default function Home ({navigation}) {
     }],
     { useNativeDriver: false })}
     >
-      <CardProduto />
+    {movies.map((imagen) => (
+          <Card style={styles.card} key={imagen.id}>
+            <Card.Content>
+            </Card.Content>
+            <Card.Cover
+              style={styles.cover}
+              source={{ uri: imagen.cover.url }}
+            />
+          </Card>
+        ))}
     </ScrollView>
     </View>
   )
@@ -75,6 +92,7 @@ const styles = StyleSheet.create({
   },
   card: {
     backgroundColor: '#B59D68',
+    margin:10,
   },
   header: {
     backgroundColor: '#FFD966',
