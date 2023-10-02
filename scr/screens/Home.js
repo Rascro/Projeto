@@ -1,9 +1,7 @@
-import React, {useState} from 'react';
-import { ScrollView, StyleSheet, View, Text, Animated} from 'react-native';
+import React, {useState, useEffect, useCallback} from 'react';
+import { ScrollView, RefreshControl, StyleSheet, View, Animated} from 'react-native';
 import { Avatar, Card } from 'react-native-paper';
-import { SafeAreaView, useSafeAreaFrame } from 'react-native-safe-area-context';
-import ImagenService from '../service/imagens';
-
+import ProdutoList from '../components/ProdutosList';
 
 const LeftContent = props => <Avatar.Icon {...props} icon="folder" />
 
@@ -13,20 +11,7 @@ export default function Home ({navigation}) {
   const [refreshing, setRefreshing] = useState(false);
   const [imagen, setImagens] = useState([]);
 
-  const fetchImagens = async () => {
-    const data = await ImagenService.getAllImagens();
-    setImagens(data);
-  };
-
-  const onRefresh = useCallback(async () => {
-    setRefreshing(true);
-    await fetchImagens();
-    setRefreshing(false);
-  }, []);
-
-  useEffect(() => {
-    fetchImagens();
-  }, []);
+  
 
   return (
     <View>
@@ -71,16 +56,7 @@ export default function Home ({navigation}) {
     }],
     { useNativeDriver: false })}
     >
-    {movies.map((imagen) => (
-          <Card style={styles.card} key={imagen.id}>
-            <Card.Content>
-            </Card.Content>
-            <Card.Cover
-              style={styles.cover}
-              source={{ uri: imagen.cover.url }}
-            />
-          </Card>
-        ))}
+      <ProdutoList/>
     </ScrollView>
     </View>
   )
