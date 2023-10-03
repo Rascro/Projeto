@@ -36,14 +36,15 @@ const ProdutoList = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#00b5b2',
+    backgroundColor: '#FFD966',
     padding: 10,
   },
   header: {
     fontSize: 20,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#black',
     marginBottom: 10,
+    textAlign: 'center',
   },
   horarioItem: {
     marginBottom: 10,

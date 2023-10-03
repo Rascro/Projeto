@@ -20,7 +20,7 @@ export default function App() {
           <Tab.Screen name="Carrinho" component={Carrinho} />
           <Tab.Screen name="Login" component={Login} />
         </Tab.Navigator>
-      </NavigationContainer>
+      </NavigationContainer> 
     </PaperProvider>
   );
 

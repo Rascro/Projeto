@@ -66,10 +66,6 @@ const styles = StyleSheet.create({
   scrollView: {
     backgroundColor: '#ffff',
   },
-  card: {
-    backgroundColor: '#B59D68',
-    margin:10,
-  },
   header: {
     backgroundColor: '#FFD966',
   },
