@@ -1,12 +1,48 @@
 import React, { useState } from "react";
-import { StyleSheet, View, Animated, Text } from "react-native";
-import { Button, TextInput } from "react-native-paper";
+import {
+  StyleSheet,
+  View,
+  Animated,
+  Text,
+  TouchableOpacity,
+  TextInput,
+} from "react-native";
+import * as SecureStore from "expo-secure-store";
+import { useSetRecoilState } from "recoil";
+import { authState, useAuth } from "../recoil/atoms/auth";
 
-export default function Login() {
-  const [usuario, setUsuario] = React.useState("");
+export default function Login({ navigation }) {
+  const { setToken } = useAuth();
+  const { auth } = useAuth();
+  const setAuth = useSetRecoilState(authState);
+  const [nome, setNome] = React.useState("");
   const [senha, setSenha] = React.useState("");
+  const [errorMsg, setErrorMsg] = useState("");
   const [scrollY, setScrollY] = useState(new Animated.Value(0));
 
+  const login = async () => {
+    try {
+      const { data } = await api.post("token/", {
+        nome: nome,
+        senha: senha,
+      });
+
+      await setToken(data.access);
+
+      setAuth({
+        isLogged: true,
+        token: data.access,
+        refresh: data.refresh,
+        userID: data.userId,
+      });
+      console.log(auth);
+      await SecureStore.setItemAsync("access", data.access);
+    } catch (error) {
+      setAuth({ isLogged: false, token: null, refresh: null, userID: null });
+      setErrorMsg("Email ou senha inválidos!");
+      await SecureStore.deleteItemAsync("access");
+    }
+  };
   return (
     <View style={styles.container}>
       <Animated.View
@@ -41,24 +77,32 @@ export default function Login() {
           Wonder Bakery
         </Animated.Text>
       </Animated.View>
-
       <TextInput
-        label="Email"
-        value={usuario}
-        onChangeText={(text) => setUsuario(text)}
+        style={styles.input}
+        placeholder="Usuário"
+        placeholderTextColor="rgba(0,0,0,0.5)"
+        value={nome}
+        onChangeText={setNome}
+        autoCapitalize={"none"}
       />
-      <TextInput
-        label="Senha"
-        value={senha}
-        onChangeText={(text) => setSenha(text)}
-      />
-      <Button
-        color="#0D131A"
-        mode="elevated"
-        onPress={() => navigation.navigate("")}
-      >
-        Confirmar
-      </Button>
+      <View style={styles.passwordInput}>
+        <TextInput
+          style={styles.passwordTextInput}
+          placeholder="Senha"
+          placeholderTextColor="rgba(0,0,0,0.5)"
+          value={senha}
+          onChangeText={setSenha}
+          autoCapitalize={"none"}
+        />
+        <Text>{errorMsg}</Text>
+        <TouchableOpacity
+          activeOpacity={0.5}
+          style={styles.login}
+          onPress={() => login()}
+        >
+          <Text style={styles.logintext}>Login</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 }
